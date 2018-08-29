@@ -28,11 +28,12 @@ class ChangeCityViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         //Get all the cities from file and parse the response
-        let filePath = Bundle.main.path(forResource: "United Kingdom", ofType: ".json")
+        let filePath = Bundle.main.path(forResource: "United States", ofType: ".json")
         let data = try! Data(contentsOf: URL(fileURLWithPath: filePath!), options: .alwaysMapped)
         
         allCities = try! JSONDecoder().decode(Cities.self, from: data)
-        
+                    
+        })
         //print(allCities)
         
         //Add Gesture regognizer to dismiss keyboard when user clicks on the table view
