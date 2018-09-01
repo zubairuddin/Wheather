@@ -1,9 +1,7 @@
 //
 //  WeatherDataModel.swift
-//  WeatherApp
-//
-//  Created by Angela Yu on 24/08/2015.
-//  Copyright (c) 2015 London App Brewery. All rights reserved.
+//  Created by Avicenna on 01/09/2018.
+//  Copyright (c) 2018 Avicenna. All rights reserved.
 //
 
 import UIKit
@@ -11,7 +9,8 @@ import UIKit
 class WeatherDataModel {
 
     //Declare your model variables here
-    var temperature : Int = 0
+    var temperatureCelcius : Int = 0
+    var temperatureFahrenheit : Int = 0
     var condition : Int = 0
     var city : String = ""
     var weatherIconName : String = ""

@@ -2,14 +2,15 @@
 //  ChangeCityViewController.swift
 //  WeatherApp
 //
-//  Created by Angela Yu on 23/08/2015.
-//  Copyright (c) 2015 London App Brewery. All rights reserved.
+//  Created by Avicenna on 01/09/2018.
+//  Copyright (c) 2018 Avicenna. All rights reserved.
 //
 
 import UIKit
+import SVProgressHUD
 
 protocol ChangeCityDelegate {
-    func userEnteredANewCityName(city: String)
+    func userEnteredANewCityName(city: City)
 }
 
 class ChangeCityViewController: UIViewController {
@@ -20,6 +21,7 @@ class ChangeCityViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     
     var allCities: Cities!
+    var arrAllCitiesSorted = [City]()
     var arrFilteredCities = [City]()
     var isSearching = false
     
@@ -28,19 +30,26 @@ class ChangeCityViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         //Get all the cities from file and parse the response
-        let filePath = Bundle.main.path(forResource: "United States", ofType: ".json")
-        let data = try! Data(contentsOf: URL(fileURLWithPath: filePath!), options: .alwaysMapped)
         
-        allCities = try! JSONDecoder().decode(Cities.self, from: data)
-                    
-        })
-        //print(allCities)
+        let filePath = Bundle.main.path(forResource: "United States", ofType: ".json")
+        
+        //Show the loader
+        SVProgressHUD.setDefaultMaskType(.black)
+        SVProgressHUD.show()
+        
+        DispatchQueue.global().async {
+            let data = try! Data(contentsOf: URL(fileURLWithPath: filePath!), options: .alwaysMapped)
+            
+            self.allCities = try! JSONDecoder().decode(Cities.self, from: data)
+            self.arrAllCitiesSorted = self.allCities.cities.sorted(by: {$0.name < $1.name})
+            
+            DispatchQueue.main.async {
+                SVProgressHUD.dismiss()
+                self.tblCities.reloadData()
+            }
+        }
         
         //Add Gesture regognizer to dismiss keyboard when user clicks on the table view
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        gestureRecognizer.numberOfTapsRequired = 1
-        //self.view.addGestureRecognizer(gestureRecognizer)
-
     }
     
     @objc func dismissKeyboard() {
@@ -54,7 +63,7 @@ class ChangeCityViewController: UIViewController {
             city = arrFilteredCities[index]
         }
         else {
-            city = allCities.cities[index]
+            city = arrAllCitiesSorted[index]
         }
         
         return city
@@ -69,7 +78,7 @@ extension ChangeCityViewController: UITableViewDataSource {
             return arrFilteredCities.count
         }
         
-        return allCities.cities.count
+        return arrAllCitiesSorted.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -86,7 +95,7 @@ extension ChangeCityViewController: UITableViewDataSource {
 extension ChangeCityViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let city = getCity(atIndex: indexPath.row)
-        delegate?.userEnteredANewCityName(city: city.name)
+        delegate?.userEnteredANewCityName(city: city)
         self.navigationController?.popViewController(animated: true)
     }
 }
@@ -95,6 +104,7 @@ extension ChangeCityViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
         isSearching = false
         searchBar.text = ""
         tblCities.reloadData()
@@ -103,10 +113,11 @@ extension ChangeCityViewController: UISearchBarDelegate {
         
         if !searchText.isEmpty {
             isSearching = true
-            arrFilteredCities = allCities.cities.filter{
+            arrFilteredCities = arrAllCitiesSorted.filter{
                 return $0.name.localizedCaseInsensitiveContains(searchText)
-            }
+                }
         }
+            
         else {
             isSearching = false
         }

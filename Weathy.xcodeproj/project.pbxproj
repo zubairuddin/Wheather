@@ -18,7 +18,6 @@
 		B8FFC4396945495740D96541 /* Pods_Clima.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CF3E1541F39AA8B5EEE5BD /* Pods_Clima.framework */; };
 		F9431F2421187BF700F51F58 /* CityModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9431F2321187BF700F51F58 /* CityModel.swift */; };
 		F9431F28211882B900F51F58 /* CityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9431F26211882B900F51F58 /* CityCell.swift */; };
-		F99342D321186E6300DAA1AF /* United Kingdom.json in Resources */ = {isa = PBXBuildFile; fileRef = F99342D221186E6300DAA1AF /* United Kingdom.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +36,6 @@
 		9BB140805F4A38A2086748F2 /* Pods-Clima.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Clima.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Clima/Pods-Clima.debug.xcconfig"; sourceTree = "<group>"; };
 		F9431F2321187BF700F51F58 /* CityModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityModel.swift; sourceTree = "<group>"; };
 		F9431F26211882B900F51F58 /* CityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityCell.swift; sourceTree = "<group>"; };
-		F99342D221186E6300DAA1AF /* United Kingdom.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "United Kingdom.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				3D9DC6402134623D002992E4 /* United States.json */,
-				F99342D221186E6300DAA1AF /* United Kingdom.json */,
 				63E28ACF1B99C32400FBF6E0 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -209,7 +206,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				63E28AF71B99C36100FBF6E0 /* Images.xcassets in Resources */,
-				F99342D321186E6300DAA1AF /* United Kingdom.json in Resources */,
 				63E28AFF1B99C3B300FBF6E0 /* LaunchScreen.xib in Resources */,
 				3D9DC6412134623D002992E4 /* United States.json in Resources */,
 				63E28AF81B99C36100FBF6E0 /* Main.storyboard in Resources */,

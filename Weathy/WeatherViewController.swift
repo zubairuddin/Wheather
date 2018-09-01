@@ -2,8 +2,8 @@
 //  ViewController.swift
 //  WeatherApp
 //
-//  Created by Angela Yu on 23/08/2015.
-//  Copyright (c) 2015 London App Brewery. All rights reserved.
+//  Created by Avicenna on 01/09/2018.
+//  Copyright (c) 2018 Avicenna. All rights reserved.
 //
 
 import UIKit
@@ -11,21 +11,17 @@ import CoreLocation
 import Alamofire
 import SwiftyJSON
 
+enum TempratureUnit {
+    case fahrenheit
+    case celcius
+}
+
 class WeatherViewController: UIViewController, CLLocationManagerDelegate, ChangeCityDelegate {
     
-    @IBOutlet weak var faren: UISwitch!
     //Constants
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
     let APP_ID = "23030bfcf6b163c0e6ab7a0d6fdfe610"
     
-    @IBAction func `switch`(_ sender: UISwitch) {
-        
-        if sender.isOn {
-            
-        }
-    }
-    
-    //TODO: Declare instance variables here
     let locationManager = CLLocationManager()
     let weatherDataModel = WeatherDataModel()
  
@@ -33,8 +29,9 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     @IBOutlet weak var weatherIcon: UIImageView!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
-
-    @IBOutlet weak var button: UIButton!
+    @IBOutlet weak var btnFahrenheit: UIButton!
+    
+    var selectedTempratureUnit: TempratureUnit!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,13 +41,12 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
+        //By default fahrenheit will be selected
+        selectedTempratureUnit = .fahrenheit
     }
        
     //MARK: - Networking
-    /***************************************************************/
-    
-    //Write the getWeatherData method here:
-    
     func getWeatherData(url: String, parameters: [String: String]) {
         
         Alamofire.request(url, method: .get, parameters: parameters).responseJSON {
@@ -73,32 +69,41 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
         
     }
     
-    @IBAction func changeCityAction(_ sender: Any) {
-        let vc = storyboard?.instantiateViewController(withIdentifier: "ChangeCityViewController") as! ChangeCityViewController
-        vc.delegate = self
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-    
     func updateWeatherData(json : JSON) {
     
         let tempResult = json["main"]["temp"].doubleValue
-    
-            weatherDataModel.temperature = Int(tempResult - 273.15)
-    
+
+        if tempResult > 0 {
+            print("City = \(json["name"].stringValue),Kelvin= \(tempResult) Fahrenheit = \(Int(tempResult - 273.15) * 9 / 5 + 32), Celcius = \(Int(tempResult - 273.15))")
+            //The temp returned from openWeatherMap API is in kelvin, we need to convert it in celcius or fahrenheit
+            weatherDataModel.temperatureCelcius = Int(tempResult - 273.15)
+            weatherDataModel.temperatureFahrenheit = Int(tempResult - 273.15) * 9 / 5 + 32
+            
             weatherDataModel.city = json["name"].stringValue
-    
+            
             weatherDataModel.condition = json["weather"][0]["id"].intValue
-    
+            
             weatherDataModel.weatherIconName = weatherDataModel.updateWeatherIcon(condition: weatherDataModel.condition)
-    
-    
+            
+            
             updateUIWithWeatherData()
+
+        }
+        else {
+            let alert = UIAlertController(title: "City not found!", message: nil, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(okAction)
+            present(alert, animated: true, completion: nil)
+        }
     }
     
     func updateUIWithWeatherData() {
         
         cityLabel.text = weatherDataModel.city
-        temperatureLabel.text = "\(weatherDataModel.temperature)°"
+        
+        //If fahrenheit is selected then show temprature in fahrenheit else show temprature in celcius
+        temperatureLabel.text = selectedTempratureUnit == .fahrenheit ? "\(weatherDataModel.temperatureFahrenheit)°" : "\(weatherDataModel.temperatureCelcius)°"
+        
         weatherIcon.image = UIImage(named: weatherDataModel.weatherIconName)
     }
     
@@ -128,17 +133,26 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate, Change
     }
 
     //MARK: - Change City Delegate methods
-    /***************************************************************/
-    
-    
-    //Write the userEnteredANewCityName Delegate method here:
-    
-    
-    func userEnteredANewCityName(city: String) {
-        let params : [String : String] = ["q" : city, "appid" : APP_ID]
+    func userEnteredANewCityName(city: City) {
+        //let params : [String : String] = ["q" : city, "appid" : APP_ID]
+        
+        let params = ["lat" : city.latitude, "lon" : city.longitude, "appid" : APP_ID]
         getWeatherData(url: WEATHER_URL, parameters: params)
     }
-
+    
+    //MARK: - Actions
+    @IBAction func changeCityAction(_ sender: Any) {
+        let vc = storyboard?.instantiateViewController(withIdentifier: "ChangeCityViewController") as! ChangeCityViewController
+        vc.delegate = self
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @IBAction func segmentedControlChanged(_ sender: UISegmentedControl) {
+        
+        selectedTempratureUnit = sender.selectedSegmentIndex == 0 ? .fahrenheit : .celcius
+        updateUIWithWeatherData()
+    }
+    
 }
 
 

@@ -1,9 +1,7 @@
 //
 //  CityCell.swift
-//  Clima
-//
 //  Created by Zubair.Nagori on 06/08/18.
-//  Copyright © 2018 London App Brewery. All rights reserved.
+//  Copyright © 2018 Avicenna. All rights reserved.
 //
 
 import UIKit
